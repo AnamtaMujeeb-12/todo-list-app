@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": 1775742643941,
+      "username": "sashi",
+      "password": "sashi@2023"
+    },
+    {
+      "id": 1775743615404,
+      "username": "akash verma",
+      "password": "#ak123"
+    },
+    {
+      "id": 1775748317621,
+      "username": "anam",
+      "password": "1234"
+    }
+  ],
+  "todos": [
+    {
+      "id": 1775757307048,
+      "userId": 1775748317621,
+      "task": "Get house grocery",
+      "completed": true
+    },
+    {
+      "id": 1775757372591,
+      "userId": "1775748317621",
+      "task": "clean the house on weekend",
+      "completed": false
+    },
+    {
+      "id": 1775813817493,
+      "userId": "1775742643941",
+      "task": "bj",
+      "completed": false
+    }
+  ]
+}

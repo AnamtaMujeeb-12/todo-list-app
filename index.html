@@ -1,0 +1,53 @@
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Login / Register</h2>
+
+<input id="u" placeholder="username">
+<input id="p" placeholder="password">
+
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+
+<script>
+  async function register() {
+  await fetch('/register', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      username: u.value,
+      password: p.value
+    })
+  });
+
+  alert("Registered");
+}
+
+async function login() {
+  let res = await fetch('/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      username: u.value,
+      password: p.value
+    })
+  });
+
+  let data = await res.json();
+
+  if(data.id){
+    localStorage.setItem('userId', data.id);
+    location = 'todo.html';
+  } else {
+    alert("Invalid login");
+  }
+}
+
+</script>
+</body>
+</html>
+

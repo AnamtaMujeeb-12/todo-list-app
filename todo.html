@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Todo List</h2>
+
+<input id="task">
+<button onclick="add()">Add</button>
+
+<ul id="list"></ul>
+
+<script>
+    let userId = localStorage.getItem('userId');
+
+async function load() {
+  let res = await fetch('/todos/' + userId);
+  let data = await res.json();
+
+  list.innerHTML = '';
+
+  data.forEach(t => {
+    list.innerHTML += `
+  <li class="${t.completed ? 'completed' : ''}">
+    <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggle(${t.id})">
+    ${t.task}
+    <button onclick="del(${t.id})">❌</button>
+  </li>
+`;
+  });
+}
+
+async function toggle(id){
+  await fetch('/update/' + id);
+  load();
+}
+
+async function add() {
+  await fetch('/add', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      userId,
+      task: task.value
+    })
+  });
+
+  load();
+}
+
+async function del(id) {
+  await fetch('/delete/' + id);
+  load();
+}
+
+load();
+</script>
+
+</body>
+</html>
