@@ -6,15 +6,42 @@
 </head>
 <body>
 
-<h2>Todo List</h2>
+<div class="app">
 
-<input id="task">
-<button onclick="add()">Add</button>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>My Tasks</h2>
+    <p class="menu active" id="allTasks">All Tasks</p>
+    <p class="menu" id="completedTasks">Completed</p>
+  </div>
 
-<ul id="list"></ul>
+  <!-- Main Content -->
+  <div class="main">
+
+    <div class="header">
+      <h2>To-Do List</h2>
+    </div>
+
+    <!-- Input -->
+    <div class="task-input">
+      <input type="text" id="taskInput" placeholder="Add a new task..." />
+      <button onclick="addTodo()">Add</button>
+    </div>
+
+    <!-- List -->
+    <ul id="taskList"></ul>
+
+  </div>
+
+</div>
 
 <script>
-    let userId = localStorage.getItem('userId');
+let userId = localStorage.getItem('userId');
+let currentFilter = "all";
+
+let list = document.getElementById('taskList');
+let taskInput = document.getElementById('taskInput');
+
 
 async function load() {
   let res = await fetch('/todos/' + userId);
@@ -22,15 +49,22 @@ async function load() {
 
   list.innerHTML = '';
 
-  data.forEach(t => {
-    list.innerHTML += `
-  <li class="${t.completed ? 'completed' : ''}">
-    <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggle(${t.id})">
-    ${t.task}
-    <button onclick="del(${t.id})">❌</button>
-  </li>
-`;
-  });
+  data
+    .filter(t => currentFilter === "all" || t.completed)
+    .forEach(t => {
+      list.innerHTML += `
+        <li>
+          <span class="${t.completed ? 'completed' : ''}">
+            ${t.task}
+          </span>
+
+          <div class="task-actions">
+            <button onclick="toggle(${t.id})">✔</button>
+            <button class="delete-btn" onclick="del(${t.id})">✖</button>
+          </div>
+        </li>
+      `;
+    });
 }
 
 async function toggle(id){
@@ -38,16 +72,17 @@ async function toggle(id){
   load();
 }
 
-async function add() {
+async function addTodo() {
   await fetch('/add', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({
       userId,
-      task: task.value
+      task: taskInput.value
     })
   });
 
+  taskInput.value = ''; // clear input
   load();
 }
 
@@ -55,9 +90,23 @@ async function del(id) {
   await fetch('/delete/' + id);
   load();
 }
+document.getElementById("allTasks").onclick = () => {
+  currentFilter = "all";
+  setActive("allTasks");
+  load();
+};
 
+document.getElementById("completedTasks").onclick = () => {
+  currentFilter = "completed";
+  setActive("completedTasks");
+  load();
+};
+
+function setActive(id) {
+  document.querySelectorAll(".menu").forEach(m => m.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
 load();
 </script>
-
 </body>
 </html>
